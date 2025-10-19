@@ -1,0 +1,17 @@
+Numpy
+Scipy
+Pandas
+Matplotlib
+Lynx
+Makefile
+Black
+lint
+fastapi
+uvicorn
+python-multipart
+pdfplumber
+python-docx
+pytest
+Ipython
+aiofiles
+pytest-cov
