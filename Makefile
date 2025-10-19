@@ -14,8 +14,11 @@ test:
 format:
 	black ingestion/*.py
 
-# Analyse statique du code avec pylint
-lint:
+# Analyse statique du code avec ruff# Analyse statique du code avec ruff (et garde pylint en option)
+ruff:
+	ruff check ingestion --fix
+
+lint: ruff
 	pylint --disable=R,C ingestion/main.py
 
 # Lancer l'application FastAPI
