@@ -13,17 +13,23 @@ test:
 
 format:
 	black ingestion/*.py
+	black extraction/*.py
 
 # Analyse statique du code avec ruff# Analyse statique du code avec ruff (et garde pylint en option)
 ruff:
 	ruff check ingestion --fix
+	ruff check extraction --fix
 
 lint: ruff
-	pylint --disable=R,C ingestion/main.py
+	pylint --disable=R,C ingestion/*.py
+# 	on le fait pour tout les fichier py dans le  repertoire 
+	pylint --disable=R,C extraction/*.py
 
 # Lancer l'application FastAPI
 run:
-	python -m uvicorn ingestion.main:inst_app --reload
+# 	python -m uvicorn ingestion.main:inst_app --reload
+# 	 j'exécute le fichier main de extraction pour avoir mon pdf
+	python -m extraction.extract
 
 # Exécuter un test spécifique
 one-test:

@@ -14,7 +14,7 @@ from fastapi.responses import HTMLResponse
 
 
 # je précise le repertoire dans lequel mon fichier serait enregistré
-FILE_DIRECTORY = "/home/blessed/Documents/projet_church/project/ingestion/uploads/"
+FILE_DIRECTORY = "/home/blessed/Documents/projet_church/project/uploads"
 os.makedirs(FILE_DIRECTORY, exist_ok=True)
 
 # je crée mon instance de l'application FastAPI
@@ -24,43 +24,44 @@ inst_app = FastAPI()
 # maintenant, je crée le point de terminaison pour l'upload du fichier
 @inst_app.post("/uploadfile/")
 async def upload_file(file: UploadFile = File(...)):
-	"""
-	Cette fonction gère l'upload d'un fichier via une requête POST. et il
-	n'accepte que un pdf
-	Args:
-			file (UploadFile): Le fichier téléchargé via le formulaire.
-	"""
+    """
+    Cette fonction gère l'upload d'un fichier via une requête POST. et il
+    n'accepte que un pdf
+    Args:
+                    file (UploadFile): Le fichier téléchargé via le formulaire.
+    """
 
-	# je construis le chemin du fichier à enregistrer
-	file_path = os.path.join(FILE_DIRECTORY, file.filename)
+    # je construis le chemin du fichier à enregistrer
+    file_path = os.path.join(FILE_DIRECTORY, file.filename)
 
-	# je lis les premiers octets du fichier pour vérifier son type
-	header = await file.read(16)
-	# je remets le curseur au début du fichier
-	await file.seek(0)
+    # je lis les premiers octets du fichier pour vérifier son type
+    header = await file.read(16)
+    # je remets le curseur au début du fichier
+    await file.seek(0)
 
-	# je vérifie si le fichier est un PDF en vérifiant son en-tête
-	if not header.startswith(b"%PDF"):
-		raise HTTPException(
-			status_code=status.HTTP_400_BAD_REQUEST,
-			detail="Seuls les fichiers PDF sont acceptés.",
-		)
+    # je vérifie si le fichier est un PDF en vérifiant son en-tête
+    if not header.startswith(b"%PDF"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Seuls les fichiers PDF sont acceptés.",
+        )
 
-	# je sauvegarde le fichier sur le serveur
-	async with aiofiles.open(file_path, "wb") as monfichier:
-		# je cree une boucle pour ecrire le fichier par morceaux
-		while  True  :
-			contenu = await file.read (1024 * 1024)  # lire par morceaux de 1 Mo
-			if not contenu :
-				break
-			await monfichier.write (contenu)
-	return {"filename": file.filename, "message": "Fichier téléchargé avec succès"}
+    # je sauvegarde le fichier sur le serveur
+    async with aiofiles.open(file_path, "wb") as monfichier:
+        # je cree une boucle pour ecrire le fichier par morceaux
+        while True:
+            contenu = await file.read(1024 * 1024)  # lire par morceaux de 1 Mo
+            if not contenu:
+                break
+            await monfichier.write(contenu)
+    return {"filename": file.filename, "message": "Fichier téléchargé avec succès"}
+
+
 # je crée une page HTML simple pour tester l'upload via un formulaire
 @inst_app.get("/upload", response_class=HTMLResponse)
 async def upload_form():
-
-	"""Renvoie un formulaire HTML pour télécharger un fichier."""
-	return """
+    """Renvoie un formulaire HTML pour télécharger un fichier."""
+    return """
 		<html lang="fr">
 		<head>
 		<meta charset="utf-8"/>
@@ -133,11 +134,13 @@ async def upload_form():
 		</body>
 		</html>
 	"""
+
+
 # je crée une route racine pour vérifier que l'API fonctionne
 @inst_app.get("/")
 async def root():
-	return {
-		"status": "ok",
-		"message": "API en route. "
-		"Utilisez POST /uploadfile/ pour téléverser un fichier.",
-	}
+    return {
+        "status": "ok",
+        "message": "API en route. "
+        "Utilisez POST /uploadfile/ pour téléverser un fichier.",
+    }
